@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: crop_management_db
+    environment:
+      POSTGRES_DB: rodrigue
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/ultimate_schema.sql:/docker-entrypoint-initdb.d/ultimate_schema.sql
+    networks:
+      - crop_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Crop Management Application
+  crop-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    container_name: crop_management_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: rodrigue
+      DB_USER: postgres
+      DB_PASSWORD: 12345
+      DISPLAY: host.docker.internal:0.0
+    networks:
+      - crop_network
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    network_mode: bridge
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+
+networks:
+  crop_network:
+    driver: bridge

@@ -1,0 +1,49 @@
+@startuml Sequence_Diagram_Add_Crop
+title Crop Management System - Add Crop Sequence Diagram
+
+actor Farmer
+participant "LoginPage" as LP
+participant "FarmerDashboard" as FD
+participant "AddCropDialog" as ACD
+participant "CropController" as CC
+participant "CropDAO" as DAO
+participant "DatabaseConnection" as DB
+participant "CropSubject" as CS
+participant "NotificationObserver" as NO
+
+Farmer -> LP: login(username, password)
+LP -> FD: showDashboard()
+FD -> Farmer: display dashboard
+
+Farmer -> FD: clickAddCrop()
+FD -> ACD: showDialog()
+ACD -> Farmer: display form
+
+Farmer -> ACD: fillCropDetails()
+Farmer -> ACD: clickSave()
+
+ACD -> CC: addCrop(userId, cropTypeId, cropName, dates, quantity, notes)
+CC -> CC: validateInput()
+
+alt Valid Input
+    CC -> DAO: addCrop(crop)
+    DAO -> DB: getConnection()
+    DB -> DAO: connection
+    DAO -> DB: executeInsert()
+    DB -> DAO: success
+    DAO -> CC: true
+    
+    CC -> CS: notifyAdded(crop)
+    CS -> NO: onCropAdded(crop)
+    NO -> NO: logNotification()
+    
+    CC -> ACD: "SUCCESS"
+    ACD -> Farmer: showSuccessMessage()
+    ACD -> FD: refreshCropList()
+    
+else Invalid Input
+    CC -> ACD: errorMessage
+    ACD -> Farmer: showErrorMessage()
+end
+
+@enduml

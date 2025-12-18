@@ -1,0 +1,32 @@
+# Simple Dockerfile without Ant
+FROM eclipse-temurin:17-jdk-alpine
+
+# Install PostgreSQL client and GUI libraries
+RUN apk add --no-cache postgresql-client libx11 libxext libxrender libxtst fontconfig
+
+# Set working directory
+WORKDIR /app
+
+# Copy source code
+COPY ["Crop Managment System 1/src", "./src"]
+
+# Download PostgreSQL JDBC driver
+ADD https://jdbc.postgresql.org/download/postgresql-42.7.1.jar ./lib/postgresql-42.7.1.jar
+
+# Create build directory
+RUN mkdir -p build/classes
+
+# Compile Java files
+RUN javac -cp "./lib/postgresql-42.7.1.jar" -d build/classes \
+    src/dao/*.java \
+    src/model/*.java \
+    src/controller/*.java \
+    src/observer/*.java \
+    src/util/*.java \
+    src/view/*.java
+
+# Set classpath
+ENV CLASSPATH="/app/build/classes:/app/lib/postgresql-42.7.1.jar"
+
+# Run the application with GUI support
+CMD ["java", "-Djava.awt.headless=false", "-Dfile.encoding=UTF-8", "-cp", "/app/build/classes:/app/lib/postgresql-42.7.1.jar", "view.LoginPage"]

@@ -1,0 +1,60 @@
+@startuml Data_Flow_Diagram
+title Crop Management System - Data Flow Diagram (Level 1)
+
+!define PROCESS_COLOR #LightBlue
+!define DATASTORE_COLOR #LightGreen
+!define EXTERNAL_COLOR #LightCoral
+
+rectangle "Farmer" as farmer EXTERNAL_COLOR
+rectangle "Admin" as admin EXTERNAL_COLOR
+
+rectangle "1.0\nUser Authentication" as auth PROCESS_COLOR
+rectangle "2.0\nCrop Management" as crop_mgmt PROCESS_COLOR
+rectangle "3.0\nHarvest Tracking" as harvest PROCESS_COLOR
+rectangle "4.0\nSales Management" as sales PROCESS_COLOR
+rectangle "5.0\nReporting" as reporting PROCESS_COLOR
+
+cylinder "D1: Users" as users_db DATASTORE_COLOR
+cylinder "D2: Crops" as crops_db DATASTORE_COLOR
+cylinder "D3: Sales" as sales_db DATASTORE_COLOR
+cylinder "D4: Crop Types" as crop_types_db DATASTORE_COLOR
+
+' User Authentication flows
+farmer --> auth : login credentials
+admin --> auth : login credentials
+auth --> users_db : validate user
+users_db --> auth : user data
+auth --> farmer : authentication result
+auth --> admin : authentication result
+
+' Crop Management flows
+farmer --> crop_mgmt : crop details
+crop_mgmt --> crops_db : store crop data
+crop_mgmt --> crop_types_db : get crop types
+crops_db --> crop_mgmt : crop information
+crop_mgmt --> farmer : crop status
+
+' Harvest Tracking flows
+farmer --> harvest : harvest data
+harvest --> crops_db : update harvest info
+crops_db --> harvest : current crop data
+harvest --> farmer : harvest confirmation
+
+' Sales Management flows
+farmer --> sales : sale details
+sales --> sales_db : store sale data
+sales --> crops_db : update inventory
+sales_db --> sales : sale records
+sales --> farmer : sale confirmation
+
+' Reporting flows
+admin --> reporting : report request
+reporting --> crops_db : crop data
+reporting --> sales_db : sales data
+reporting --> users_db : user data
+crops_db --> reporting : crop statistics
+sales_db --> reporting : sales statistics
+users_db --> reporting : user statistics
+reporting --> admin : generated reports
+
+@enduml

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="CropManagementSystemTest" default="test" basedir=".">
+    <description>Test build file for Crop Management System</description>
+    
+    <!-- Properties -->
+    <property name="src.dir" value="src"/>
+    <property name="test.dir" value="test"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.test.dir" value="${build.dir}/test"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="reports.dir" value="${build.dir}/reports"/>
+    
+    <!-- Classpath -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+        <pathelement location="${build.classes.dir}"/>
+    </path>
+    
+    <path id="test.classpath">
+        <path refid="classpath"/>
+        <pathelement location="${build.test.dir}"/>
+    </path>
+    
+    <!-- Clean -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+    
+    <!-- Init -->
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${reports.dir}"/>
+    </target>
+    
+    <!-- Compile main sources -->
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" 
+               destdir="${build.classes.dir}" 
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17"
+               target="17">
+        </javac>
+    </target>
+    
+    <!-- Compile test sources -->
+    <target name="compile-tests" depends="compile">
+        <javac srcdir="${test.dir}" 
+               destdir="${build.test.dir}" 
+               classpathref="test.classpath"
+               includeantruntime="false"
+               source="17"
+               target="17">
+        </javac>
+    </target>
+    
+    <!-- Run tests -->
+    <target name="test" depends="compile-tests">
+        <echo message="Running unit tests..."/>
+        <java classname="controller.CropControllerTest" 
+              classpathref="test.classpath" 
+              fork="true"
+              failonerror="true">
+        </java>
+        <java classname="model.CropTest" 
+              classpathref="test.classpath" 
+              fork="true"
+              failonerror="true">
+        </java>
+    </target>
+    
+</project>

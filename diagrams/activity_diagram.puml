@@ -1,0 +1,55 @@
+@startuml Activity_Diagram_Crop_Management
+title Crop Management System - Activity Diagram
+
+start
+:User opens application;
+:Login screen displayed;
+
+if (Valid credentials?) then (yes)
+  if (User type?) then (Farmer)
+    :Display Farmer Dashboard;
+    :Select action;
+    
+    switch (Action selected?)
+    case (Add Crop)
+      :Fill crop details;
+      :Validate input;
+      if (Valid data?) then (yes)
+        :Save crop to database;
+        :Display success message;
+      else (no)
+        :Display error message;
+      endif
+      
+    case (View Crops)
+      :Retrieve user's crops;
+      :Display crop list;
+      
+    case (Log Harvest)
+      :Select crop;
+      :Enter harvest details;
+      :Update crop status;
+      :Notify observers;
+      
+    case (Record Sale)
+      :Select harvested crop;
+      :Enter sale details;
+      :Update inventory;
+      :Save sale record;
+    endswitch
+    
+  else (Admin)
+    :Display Admin Dashboard;
+    :View all crops and users;
+    :Generate reports;
+  endif
+  
+else (no)
+  :Display login error;
+  :Return to login screen;
+endif
+
+:User logs out;
+stop
+
+@enduml
