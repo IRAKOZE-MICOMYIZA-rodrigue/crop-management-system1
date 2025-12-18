@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database Only
+  # PostgreSQL Database Onlyfff
   postgres:
     image: postgres:15-alpine
     container_name: crop_management_db
